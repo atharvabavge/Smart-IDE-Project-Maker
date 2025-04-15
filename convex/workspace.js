@@ -64,3 +64,24 @@ export const GetAllWorkspace = query({
     return result;
   },
 });
+
+// ✅ Mutation to update the first message's content (project name)
+export const UpdateWorkspaceName = mutation({
+  args: {
+    workspaceId: v.id('workspace'),
+    newName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const workspace = await ctx.db.get(args.workspaceId);
+    if (!workspace) throw new Error("Workspace not found");
+
+    const updatedMessages = [...(workspace.messages || [])];
+    if (updatedMessages.length > 0) {
+      updatedMessages[0].content = args.newName;
+    }
+
+    await ctx.db.patch(args.workspaceId, {
+      messages: updatedMessages,
+    });
+  },
+});
