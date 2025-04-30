@@ -5,18 +5,30 @@ import { useConvex } from 'convex/react';
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react';
 import { useSidebar } from '../ui/sidebar';
+import { Search } from 'lucide-react'; // Optional: use lucide-react or any icon library
 
 function WorkspaceHistory() {
   const { userDetail } = useContext(UserDetailContext);
   const [workspaceList, setWorkSpaceList] = useState([]);
+  const [filteredList, setFilteredList] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [editedName, setEditedName] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const convex = useConvex();
   const { toggleSidebar } = useSidebar();
 
   useEffect(() => {
     userDetail && GetAllWorkspace();
   }, [userDetail]);
+
+  useEffect(() => {
+    const filtered = workspaceList.filter((workspace) =>
+      workspace?.messages[0]?.content
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    );
+    setFilteredList(filtered);
+  }, [searchQuery, workspaceList]);
 
   const GetAllWorkspace = async () => {
     const result = await convex.query(api.workspace.GetAllWorkspace, {
@@ -57,9 +69,22 @@ function WorkspaceHistory() {
 
   return (
     <div>
-      <h2 className="font-medium text-lg">Your Projects</h2>
+      <h2 className="font-medium text-lg mb-2">Your Projects</h2>
+
+      {/* Search Bar */}
+      <div className="flex items-center gap-2 border border-gray-600 rounded px-2 py-1 mb-4">
+        <Search className="text-gray-400 w-4 h-4" />
+        <input
+          type="text"
+          placeholder="Search project..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="bg-transparent text-sm text-white focus:outline-none flex-1"
+        />
+      </div>
+
       <div>
-        {workspaceList.map((workspace) => (
+        {filteredList.map((workspace) => (
           <div key={workspace._id} className="mt-2 flex items-center justify-between">
             {editingId === workspace._id ? (
               <div className="flex items-center gap-2 w-full">
