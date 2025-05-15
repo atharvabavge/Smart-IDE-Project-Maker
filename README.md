@@ -1,6 +1,6 @@
 **Smart IDE :- **
 
-Smart IDE is basically a projector maker. 
+Smart IDE is basically a projector maker by using prompts. 
 
 In today's fast-paced development landscape, developers often waste valuable time switching between multiple tools for coding, debugging, testing, and deployment. 
 
